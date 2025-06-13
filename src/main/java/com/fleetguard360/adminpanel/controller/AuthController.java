@@ -36,6 +36,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 @Tag(name = "Autenticación", description = "API para la autenticación de usuarios")
 public class AuthController {
+
+    private static final String ROLE_NOT_FOUND_ERROR = "Error: Role is not found.";
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -97,7 +100,6 @@ public class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // Create new user's account
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setEmail(signUpRequest.getEmail());
@@ -109,24 +111,24 @@ public class AuthController {
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(Role.ERole.ROLE_VIEWER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
                         Role adminRole = roleRepository.findByName(Role.ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                         roles.add(adminRole);
                         break;
                     case "operator":
                         Role modRole = roleRepository.findByName(Role.ERole.ROLE_OPERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                         roles.add(modRole);
                         break;
                     default:
                         Role userRole = roleRepository.findByName(Role.ERole.ROLE_VIEWER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                         roles.add(userRole);
                 }
             });
