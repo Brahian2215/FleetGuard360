@@ -42,13 +42,13 @@ public class ExportService {
     }
 
     private void addReportMetaData(Document document, FleetReport report) throws DocumentException {
-        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+        com.itextpdf.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
         Paragraph title = new Paragraph(report.getReportName(), titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
         document.add(Chunk.NEWLINE);
 
-        Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+        com.itextpdf.text.Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         document.add(new Paragraph("Report Type: " + report.getReportType(), metaFont));
@@ -61,7 +61,7 @@ public class ExportService {
     private void addReportDataToDocument(Document document, FleetReport report) {
         try {
             JSONObject jsonData = new JSONObject(report.getReportData());
-            Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+            com.itextpdf.text.Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
 
             if (jsonData.has(TABLE_DATA) && jsonData.get(TABLE_DATA) instanceof JSONArray tableData && tableData.length() > 0) {
                 PdfPTable table = createPdfTableFromJsonArray(tableData);
@@ -74,7 +74,7 @@ public class ExportService {
 
         } catch (Exception e) {
             try {
-                Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+                com.itextpdf.text.Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
                 document.add(new Paragraph("Error parsing report data: " + e.getMessage(), metaFont));
             } catch (DocumentException ignored) {
             }
@@ -86,7 +86,7 @@ public class ExportService {
         PdfPTable table = new PdfPTable(firstRow.length());
         table.setWidthPercentage(100);
 
-        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        com.itextpdf.text.Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
 
         for (String key : firstRow.keySet()) {
             PdfPCell headerCell = new PdfPCell(new Phrase(key, headerFont));
@@ -105,8 +105,8 @@ public class ExportService {
         return table;
     }
 
-    private void addSummaryToDocument(Document document, String summary, Font metaFont) throws DocumentException {
-        Font summaryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+    private void addSummaryToDocument(Document document, String summary, com.itextpdf.text.Font metaFont) throws DocumentException {
+        com.itextpdf.text.Font summaryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
         document.add(Chunk.NEWLINE);
         document.add(new Paragraph("Summary", summaryFont));
         document.add(new Paragraph(summary, metaFont));
