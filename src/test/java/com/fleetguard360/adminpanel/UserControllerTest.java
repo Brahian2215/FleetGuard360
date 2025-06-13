@@ -50,7 +50,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        Role role = new Role(Role.ERole.ROLE_ADMIN);
+        Role role = new Role(1L, Role.ERole.ROLE_ADMIN);
         sampleUser = new User();
         sampleUser.setId(1L);
         sampleUser.setEmail("test@demo.com");
@@ -99,10 +99,10 @@ class UserControllerTest {
         updateRequest.setEmail("updated@demo.com");
         updateRequest.setPassword("newPass123");
         updateRequest.setActive(true);
-        updateRequest.setRoles(List.of("admin"));
+        updateRequest.setRoles(Set.of("admin"));
 
         given(userRepository.findById(1L)).willReturn(Optional.of(sampleUser));
-        given(roleRepository.findByName(Role.ERole.ROLE_ADMIN)).willReturn(Optional.of(new Role(Role.ERole.ROLE_ADMIN)));
+        given(roleRepository.findByName(Role.ERole.ROLE_ADMIN)).willReturn(Optional.of(new Role(1L, Role.ERole.ROLE_ADMIN)));
         given(passwordEncoder.encode("newPass123")).willReturn("encodedNewPass");
 
         mockMvc.perform(put("/api/users/1")
