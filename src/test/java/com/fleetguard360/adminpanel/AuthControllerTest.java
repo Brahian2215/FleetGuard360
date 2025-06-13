@@ -7,7 +7,7 @@ import com.fleetguard360.adminpanel.payload.response.JwtResponse;
 import com.fleetguard360.adminpanel.repository.RoleRepository;
 import com.fleetguard360.adminpanel.repository.UserRepository;
 import com.fleetguard360.adminpanel.security.jwt.JwtUtils;
-import com.fleetguard360.adminpanel.security.services.UserDetailsImpl;
+import com.fleetguard360.adminpanel.security.service.UserDetailsImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
