@@ -2,8 +2,6 @@ package com.fleetguard360.adminpanel.service;
 
 import com.fleetguard360.adminpanel.model.FleetReport;
 import com.itextpdf.text.*;
-// Elimina este import para evitar la ambigüedad
-// import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -31,16 +29,12 @@ public class ExportService {
             PdfWriter.getInstance(document, response.getOutputStream());
             document.open();
 
-            // Add title
-            // Usa el nombre completo para Font de iText
             com.itextpdf.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
             Paragraph title = new Paragraph(report.getReportName(), titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
             document.add(Chunk.NEWLINE);
 
-            // Add report metadata
-            // Usa el nombre completo para Font de iText
             com.itextpdf.text.Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -50,57 +44,59 @@ public class ExportService {
             document.add(new Paragraph("Created By: " + report.getCreatedBy().getFullName(), metaFont));
             document.add(Chunk.NEWLINE);
 
-            // Parse JSON data and create table
-            try {
-                JSONObject jsonData = new JSONObject(report.getReportData());
-
-                // If data contains a table
-                if (jsonData.has("tableData") && jsonData.get("tableData") instanceof JSONArray) {
-                    JSONArray tableData = jsonData.getJSONArray("tableData");
-                    if (tableData.length() > 0) {
-                        PdfPTable table = new PdfPTable(tableData.getJSONObject(0).length());
-                        table.setWidthPercentage(100);
-
-                        // Add headers
-                        JSONObject firstRow = tableData.getJSONObject(0);
-                        // Usa el nombre completo para Font de iText
-                        com.itextpdf.text.Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-                        for (String key : firstRow.keySet()) {
-                            PdfPCell headerCell = new PdfPCell(new Phrase(key, headerFont));
-                            headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                            headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
-                            table.addCell(headerCell);
-                        }
-
-                        // Add data rows
-                        for (int i = 0; i < tableData.length(); i++) {
-                            JSONObject row = tableData.getJSONObject(i);
-                            for (String key : row.keySet()) {
-                                table.addCell(row.get(key).toString());
-                            }
-                        }
-
-                        document.add(table);
-                    }
-                }
-
-                // Add any additional sections from the JSON data
-                if (jsonData.has("summary") && jsonData.get("summary") instanceof String) {
-                    document.add(Chunk.NEWLINE);
-                    // Usa el nombre completo para Font de iText
-                    com.itextpdf.text.Font summaryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
-                    document.add(new Paragraph("Summary", summaryFont));
-                    document.add(new Paragraph(jsonData.getString("summary"), metaFont));
-                }
-
-            } catch (Exception e) {
-                document.add(new Paragraph("Error parsing report data: " + e.getMessage(), metaFont));
-            }
+            addReportDataToDocument(document, report, metaFont);
 
         } catch (DocumentException e) {
             throw new IOException("Error creating PDF document", e);
         } finally {
             document.close();
+        }
+    }
+
+    private void addReportDataToDocument(Document document, FleetReport report, com.itextpdf.text.Font metaFont) {
+        try {
+            JSONObject jsonData = new JSONObject(report.getReportData());
+
+            if (jsonData.has("tableData") && jsonData.get("tableData") instanceof JSONArray) {
+                JSONArray tableData = jsonData.getJSONArray("tableData");
+                if (tableData.length() > 0) {
+                    PdfPTable table = new PdfPTable(tableData.getJSONObject(0).length());
+                    table.setWidthPercentage(100);
+
+                    JSONObject firstRow = tableData.getJSONObject(0);
+                    com.itextpdf.text.Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+
+                    for (String key : firstRow.keySet()) {
+                        PdfPCell headerCell = new PdfPCell(new Phrase(key, headerFont));
+                        headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        headerCell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                        table.addCell(headerCell);
+                    }
+
+                    for (int i = 0; i < tableData.length(); i++) {
+                        JSONObject row = tableData.getJSONObject(i);
+                        for (String key : row.keySet()) {
+                            table.addCell(row.get(key).toString());
+                        }
+                    }
+
+                    document.add(table);
+                }
+            }
+
+            if (jsonData.has("summary") && jsonData.get("summary") instanceof String) {
+                document.add(Chunk.NEWLINE);
+                com.itextpdf.text.Font summaryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+                document.add(new Paragraph("Summary", summaryFont));
+                document.add(new Paragraph(jsonData.getString("summary"), metaFont));
+            }
+
+        } catch (Exception e) {
+            try {
+                document.add(new Paragraph("Error parsing report data: " + e.getMessage(), metaFont));
+            } catch (DocumentException docEx) {
+                // Ignorado
+            }
         }
     }
 
@@ -113,11 +109,9 @@ public class ExportService {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet(report.getReportName());
 
-            // Create header row for metadata
             Row headerRow = sheet.createRow(0);
             CellStyle headerStyle = workbook.createCellStyle();
 
-            // Aquí está el problema - usa Font de Apache POI, no de iText
             org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
             headerFont.setBold(true);
             headerStyle.setFont(headerFont);
@@ -126,8 +120,9 @@ public class ExportService {
             headerCell.setCellValue("Report Name");
             headerCell.setCellStyle(headerStyle);
 
-            // Resto del código...
-            // ...
+            // Completar Excel según sea necesario
+
+            workbook.write(response.getOutputStream());
         }
     }
 }
