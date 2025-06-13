@@ -73,7 +73,7 @@ jobs:
         cache: maven
 
     - name: Build Project
-      run: mvn clean install -DskipTests
+      run: mvn clean install 
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v3
