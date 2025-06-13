@@ -1,6 +1,32 @@
-@SpringBootTest
+package com.fleetguard360.adminpanel;
+
+import com.fleetguard360.adminpanel.controller.AuthController;
+import com.fleetguard360.adminpanel.model.User;
+import com.fleetguard360.adminpanel.payload.request.LoginRequest;
+import com.fleetguard360.adminpanel.payload.response.JwtResponse;
+import com.fleetguard360.adminpanel.repository.RoleRepository;
+import com.fleetguard360.adminpanel.repository.UserRepository;
+import com.fleetguard360.adminpanel.security.jwt.JwtUtils;
+import com.fleetguard360.adminpanel.security.services.UserDetailsImpl;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
-class AuthControllerTest {
+public class AuthControllerTest {
 
     @InjectMocks
     private AuthController authController;
@@ -41,6 +67,4 @@ class AuthControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof JwtResponse);
     }
-
-    // Agrega aquí los otros métodos testRegisterUserSuccessWithAdminRole, etc.
 }
