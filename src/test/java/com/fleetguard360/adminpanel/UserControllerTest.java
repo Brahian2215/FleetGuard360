@@ -1,5 +1,6 @@
 package com.fleetguard360.adminpanel.controller;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import com.fleetguard360.adminpanel.model.Role;
 import com.fleetguard360.adminpanel.model.User;
 import com.fleetguard360.adminpanel.payload.request.UpdateUserRequest;
