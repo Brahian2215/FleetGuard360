@@ -31,6 +31,8 @@ import java.util.Set;
 @Tag(name = "Usuarios", description = "API para la gestión de usuarios del sistema")
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
+    private static final String ROLE_NOT_FOUND_ERROR = "Error: Role is not found.";
+
     @Autowired
     UserRepository userRepository;
 
@@ -88,17 +90,17 @@ public class UserController {
                             switch (role) {
                                 case "admin":
                                     Role adminRole = roleRepository.findByName(Role.ERole.ROLE_ADMIN)
-                                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                                     roles.add(adminRole);
                                     break;
                                 case "operator":
                                     Role modRole = roleRepository.findByName(Role.ERole.ROLE_OPERATOR)
-                                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                                     roles.add(modRole);
                                     break;
                                 default:
                                     Role userRole = roleRepository.findByName(Role.ERole.ROLE_VIEWER)
-                                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
                                     roles.add(userRole);
                             }
                         });
